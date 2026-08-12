@@ -36,8 +36,6 @@ export const authService = {
 
 
     try {
-      // Si tienes un backend real, activa este bloque de fetch:
-      /*
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,33 +49,11 @@ export const authService = {
 
       await saveToken(data.token);
       await saveUserData(data.user);
-      return { success: true, token: data.token, user: data.user };
-      */
-
-      // --- MOCK TEMPORAL / DEMO JWT (Si aún no está enlazado el servidor) ---
-      console.log('Intento de Login:', correo);
-      
-      // Simulación de generación de JWT Token
-      const fakeJwtToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NSIsImVtYWlsIjoi${btoa(correo)}IiwiaWF0IjoxNTE2MjM5MDIyfQ.mock_signature`;
-      const user: User = {
-        id: 'usr_' + Date.now(),
-        nombre: correo.split('@')[0].toUpperCase(),
-        correo: correo,
-      };
-
-      await saveToken(fakeJwtToken);
-      await saveUserData(user);
-
-      return {
-        success: true,
-        token: fakeJwtToken,
-        user: user,
-        message: 'Sesión iniciada con éxito.',
-      };
+      return { success: true, token: data.token, user: data.user, message: data.message || 'Sesión iniciada con éxito.' };
     } catch (error: any) {
       return {
         success: false,
-        message: error.message || 'Error de conexión con el servidor.',
+        message: error.message || 'Error de conexión con el servidor de autenticación.',
       };
     }
   },
@@ -109,40 +85,24 @@ export const authService = {
     }
 
     try {
-      // Llamada real API:
-      /*
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: nombre, email: correo, password: contrasenia }),
       });
       const data = await response.json();
-      if (!response.ok) return { success: false, message: data.message };
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Error al registrar la cuenta.' };
+      }
+
       await saveToken(data.token);
       await saveUserData(data.user);
-      return { success: true, token: data.token, user: data.user };
-      */
-
-      // Mock
-      const fakeJwtToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Nzg5MCIsImVtYWlsIjoi${btoa(correo)}IiwiaWF0IjoxNTE2MjM5MDIyfQ.mock_signature`;
-      const user: User = {
-        id: 'usr_' + Date.now(),
-        nombre: nombre,
-        correo: correo,
-      };
-
-      await saveToken(fakeJwtToken);
-      await saveUserData(user);
-
-      return {
-        success: true,
-        token: fakeJwtToken,
-        user,
-        message: 'Cuenta creada con éxito.',
-      };
+      return { success: true, token: data.token, user: data.user, message: data.message || 'Cuenta creada exitosamente.' };
     } catch (error: any) {
-      return { success: false, message: error.message || 'Error al conectar con el servidor.' };
+      return { success: false, message: error.message || 'Error de conexión con el servidor de autenticación.' };
     }
+
   },
 
   /**

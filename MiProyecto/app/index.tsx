@@ -194,14 +194,8 @@ export default function AuthScreen() {
                 <Text style={styles.userNameText}>{user.nombre}</Text>
                 <Text style={styles.userEmailText}>{user.correo}</Text>
 
-                <View style={styles.tokenCard}>
-                  <Text style={styles.tokenLabel}>Estado de Token JWT (SecureStore):</Text>
-                  <Text style={styles.tokenValue} numberOfLines={2} fallback-text="">
-                    {token || 'Sin token'}
-                  </Text>
-                </View>
-
                 <TouchableOpacity style={styles.logoutButton} activeOpacity={0.85} onPress={logout}>
+
                   <Ionicons name="log-out-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
                   <Text style={styles.logoutButtonText}>CERRAR SESIÓN</Text>
                 </TouchableOpacity>
