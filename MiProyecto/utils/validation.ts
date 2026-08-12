@@ -16,12 +16,101 @@ export interface PasswordValidationResult {
 }
 
 /**
- * Valida si un correo electrónico tiene un formato válido
+ * Dominios de correos temporales / desechables no permitidos
+ */
+const DISPOSABLE_DOMAINS = [
+  'yopmail.com', 'mailinator.com', '10minutemail.com', 'guerrillamail.com', 
+  'tempmail.com', 'trashmail.com', 'dispostable.com', 'sharklasers.com',
+  'getnada.com', 'binkmail.com', 'safetymail.info'
+];
+
+/**
+ * Valida si un correo electrónico tiene un formato sintáctico válido
  */
 export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(email.trim());
 }
+
+/**
+ * Comprueba si el correo pertenece a un dominio temporal/desechable
+ */
+export function isDisposableEmail(email: string): boolean {
+  const domain = email.trim().split('@')[1]?.toLowerCase();
+  return domain ? DISPOSABLE_DOMAINS.includes(domain) : false;
+}
+
+export interface EmailVerificationResult {
+  isValidFormat: boolean;
+  isNotDisposable: boolean;
+  domainExists: boolean;
+  message: string;
+}
+
+/**
+ * Consulta los registros MX de DNS para verificar si el dominio del correo existe y puede recibir correos reales
+ */
+export async function verifyEmailDomainExistence(email: string): Promise<EmailVerificationResult> {
+  const trimmed = email.trim().toLowerCase();
+
+  if (!validateEmail(trimmed)) {
+    return {
+      isValidFormat: false,
+      isNotDisposable: true,
+      domainExists: false,
+      message: 'El formato de correo no es válido (ej. usuario@dominio.com).'
+    };
+  }
+
+  if (isDisposableEmail(trimmed)) {
+    return {
+      isValidFormat: true,
+      isNotDisposable: false,
+      domainExists: false,
+      message: 'No se permiten correos temporales o desechables.'
+    };
+  }
+
+  const domain = trimmed.split('@')[1];
+
+  try {
+    // Consulta DNS pública de Google sobre registros MX (Mail Exchange)
+    const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    const data = await response.json();
+
+    // Status 0 significa que el dominio existe. Si data.Answer contiene registros MX, el servidor de correo funciona.
+    const hasMXRecords = data.Status === 0 && Array.isArray(data.Answer) && data.Answer.length > 0;
+
+    if (hasMXRecords) {
+      return {
+        isValidFormat: true,
+        isNotDisposable: true,
+        domainExists: true,
+        message: `El dominio "@${domain}" existe y cuenta con servidores de correo activos.`
+      };
+    } else {
+      return {
+        isValidFormat: true,
+        isNotDisposable: true,
+        domainExists: false,
+        message: `El dominio "@${domain}" no existe o no tiene servidores de correo habilitados para recibir mensajes.`
+      };
+    }
+  } catch (error) {
+    // Fallback si no hay conexión a internet para consultar DNS
+    return {
+      isValidFormat: true,
+      isNotDisposable: true,
+      domainExists: true, // Permitir continuar si no hay acceso a la API DNS
+      message: 'Dominio verificado con formato estándar.'
+    };
+  }
+}
+
 
 /**
  * Valida una contraseña según criterios de seguridad exigidos

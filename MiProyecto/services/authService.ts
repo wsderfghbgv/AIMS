@@ -1,5 +1,5 @@
 import { saveToken, getToken, removeToken, saveUserData, getUserData, removeUserData } from '../utils/storage';
-import { validatePassword, validateEmail } from '../utils/validation';
+import { validatePassword, validateEmail, verifyEmailDomainExistence } from '../utils/validation';
 
 export interface User {
   id: string;
@@ -25,12 +25,15 @@ export const authService = {
    * Iniciar sesión de usuario y obtener JWT
    */
   async login(correo: string, contrasenia: string): Promise<AuthResponse> {
-    if (!validateEmail(correo)) {
-      return { success: false, message: 'El correo electrónico no tiene un formato válido.' };
+    const emailCheck = await verifyEmailDomainExistence(correo);
+    if (!emailCheck.isValidFormat || !emailCheck.isNotDisposable || !emailCheck.domainExists) {
+      return { success: false, message: emailCheck.message };
     }
+
     if (!contrasenia) {
       return { success: false, message: 'Por favor ingresa tu contraseña.' };
     }
+
 
     try {
       // Si tienes un backend real, activa este bloque de fetch:
@@ -86,11 +89,14 @@ export const authService = {
     if (!nombre.trim()) {
       return { success: false, message: 'El nombre completo es requerido.' };
     }
-    if (!validateEmail(correo)) {
-      return { success: false, message: 'Por favor ingresa un correo institucional válido.' };
+
+    const emailCheck = await verifyEmailDomainExistence(correo);
+    if (!emailCheck.isValidFormat || !emailCheck.isNotDisposable || !emailCheck.domainExists) {
+      return { success: false, message: emailCheck.message };
     }
 
     const passValidation = validatePassword(contrasenia);
+
     if (!passValidation.isValid) {
       return { 
         success: false, 

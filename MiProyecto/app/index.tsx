@@ -16,7 +16,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../context/AuthContext';
-import { validatePassword, validatePasswordMatch } from '../utils/validation';
+import { validatePassword, validatePasswordMatch, isDisposableEmail } from '../utils/validation';
+
 
 export default function AuthScreen() {
   const { user, token, isLoading, login, register, logout } = useAuth();
@@ -357,7 +358,13 @@ export default function AuthScreen() {
                           onChangeText={setRegCorreo}
                         />
                       </View>
+                      {regCorreo.length > 0 && isDisposableEmail(regCorreo) && (
+                        <Text style={[styles.matchText, styles.matchError]}>
+                          ⚠️ No se permiten correos temporales/desechables (ej. yopmail, mailinator)
+                        </Text>
+                      )}
                     </View>
+
 
                     {/* Contraseña */}
                     <View style={styles.fieldGroup}>
