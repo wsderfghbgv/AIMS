@@ -1,7 +1,11 @@
 import { Slot, useRouter, usePathname } from 'expo-router';
-import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+
+const NAVY = '#12103C';
+const GOLD = '#cfa235';
+const GOLD_LIGHT = 'rgba(207, 162, 53, 0.15)';
 
 export default function AdminLayout() {
   const router = useRouter();
@@ -12,21 +16,21 @@ export default function AdminLayout() {
   const [logoutHover, setLogoutHover] = useState(false);
 
   const menuItems = [
-    { name: 'Inicio', path: '/admin' },
-    { name: 'Usuarios', path: '/admin/usuarios' },
-    { name: 'Programas', path: '/admin/programas' },
-    { name: 'Fichas', path: '/admin/fichas' },
-    { name: 'Aprendices', path: '/admin/aprendices' },
-    { name: 'Instructores', path: '/admin/instructores' },
-    { name: 'Matriculas', path: '/admin/matriculas' },
-    { name: 'Asistencia', path: '/admin/asistencia' },
-    { name: 'Calificación', path: '/admin/calificacion' },
-    { name: 'Comunicación', path: '/admin/comunicacion' },
-    { name: 'Reportes', path: '/admin/reportes' },
-    { name: 'Configuración', path: '/admin/configuracion' },
+    { name: 'Inicio', path: '/admin', icon: 'home-outline' as const },
+    { name: 'Usuarios', path: '/admin/usuarios', icon: 'people-outline' as const },
+    { name: 'Programas', path: '/admin/programas', icon: 'book-outline' as const },
+    { name: 'Fichas', path: '/admin/fichas', icon: 'document-text-outline' as const },
+    { name: 'Aprendices', path: '/admin/aprendices', icon: 'school-outline' as const },
+    { name: 'Instructores', path: '/admin/instructores', icon: 'person-outline' as const },
+    { name: 'Matriculas', path: '/admin/matriculas', icon: 'clipboard-outline' as const },
+    { name: 'Asistencia', path: '/admin/asistencia', icon: 'checkmark-circle-outline' as const },
+    { name: 'Calificación', path: '/admin/calificacion', icon: 'star-outline' as const },
+    { name: 'Comunicación', path: '/admin/comunicacion', icon: 'chatbubble-outline' as const },
+    { name: 'Reportes', path: '/admin/reportes', icon: 'bar-chart-outline' as const },
+    { name: 'Configuración', path: '/admin/configuracion', icon: 'settings-outline' as const },
   ];
 
-  const MenuItem = ({ name, path }: { name: string, path: string }) => {
+  const MenuItem = ({ name, path, icon }: { name: string; path: string; icon: any }) => {
     const isActive = pathname === path;
     const [isHovered, setIsHovered] = useState(false);
 
@@ -41,10 +45,19 @@ export default function AdminLayout() {
           isHovered && !isActive && styles.menuItemHover,
         ]}
       >
-        <Text style={[
-          styles.menuText,
-          (isActive || isHovered) && styles.menuTextActive
-        ]}>
+        <Ionicons
+          name={isActive ? (icon.replace('-outline', '') as any) : icon}
+          size={18}
+          color={isActive ? '#FFFFFF' : 'rgba(255,255,255,0.7)'}
+          style={{ marginRight: 12 }}
+        />
+        <Text
+          style={[
+            styles.menuText,
+            isActive && styles.menuTextActive,
+            isHovered && !isActive && styles.menuTextHover,
+          ]}
+        >
           {name}
         </Text>
       </Pressable>
@@ -55,23 +68,39 @@ export default function AdminLayout() {
     return (
       <View style={styles.container}>
         <View style={styles.mobileHeader}>
-          <Ionicons name="menu" size={32} color="black" />
+          <Ionicons name="menu" size={28} color={NAVY} />
+          <Text style={styles.mobileHeaderTitle}>AIMS</Text>
           <View style={styles.mobileHeaderRight}>
-            <Ionicons name="notifications-outline" size={24} color="black" style={{ marginRight: 15 }} />
-            <Ionicons name="person-circle" size={32} color="black" />
+            <Ionicons name="notifications-outline" size={22} color={NAVY} style={{ marginRight: 15 }} />
+            <Ionicons name="person-circle" size={30} color={NAVY} />
           </View>
         </View>
-        
+
         <View style={styles.content}>
           <Slot />
         </View>
 
         <View style={styles.mobileNav}>
-          <Text style={styles.mobileNavText}>Inicio</Text>
-          <Text style={styles.mobileNavText}>Usuarios</Text>
-          <Text style={styles.mobileNavText}>Programas</Text>
-          <Text style={styles.mobileNavText}>Reportes</Text>
-          <Text style={styles.mobileNavText}>Más</Text>
+          <Pressable style={styles.mobileNavItem} onPress={() => router.push('/admin' as any)}>
+            <Ionicons name="home-outline" size={20} color="#FFF" />
+            <Text style={styles.mobileNavText}>Inicio</Text>
+          </Pressable>
+          <Pressable style={styles.mobileNavItem} onPress={() => router.push('/admin/usuarios' as any)}>
+            <Ionicons name="people-outline" size={20} color="#FFF" />
+            <Text style={styles.mobileNavText}>Usuarios</Text>
+          </Pressable>
+          <Pressable style={styles.mobileNavItem} onPress={() => router.push('/admin/programas' as any)}>
+            <Ionicons name="book-outline" size={20} color="#FFF" />
+            <Text style={styles.mobileNavText}>Programas</Text>
+          </Pressable>
+          <Pressable style={styles.mobileNavItem} onPress={() => router.push('/admin/reportes' as any)}>
+            <Ionicons name="bar-chart-outline" size={20} color="#FFF" />
+            <Text style={styles.mobileNavText}>Reportes</Text>
+          </Pressable>
+          <Pressable style={styles.mobileNavItem}>
+            <Ionicons name="ellipsis-horizontal" size={20} color="#FFF" />
+            <Text style={styles.mobileNavText}>Más</Text>
+          </Pressable>
         </View>
       </View>
     );
@@ -81,26 +110,45 @@ export default function AdminLayout() {
     <View style={styles.container}>
       {/* Sidebar */}
       <View style={styles.sidebar}>
-        <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>A I M S</Text>
+        {/* Logo + role section */}
+        <View style={styles.logoSection}>
+          <View style={styles.logoWrapper}>
+            <Image
+              source={require('../../assets/images/logo.jpeg')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+          </View>
           <Text style={styles.adminSubtitle}>Administrador</Text>
+          <View style={styles.divider} />
         </View>
 
-        <View style={styles.menuContainer}>
+        {/* Menu */}
+        <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={false}>
           {menuItems.map((item) => (
-            <MenuItem key={item.name} name={item.name} path={item.path} />
+            <MenuItem key={item.name} name={item.name} path={item.path} icon={item.icon} />
           ))}
-        </View>
+        </ScrollView>
 
-        <Pressable 
-          style={styles.logoutBtn}
-          onHoverIn={() => setLogoutHover(true)}
-          onHoverOut={() => setLogoutHover(false)}
-        >
-          <Text style={[styles.logoutText, logoutHover && styles.logoutTextHover]}>
-            Cerrar Sesión →
-          </Text>
-        </Pressable>
+        {/* Logout */}
+        <View style={styles.logoutSection}>
+          <View style={styles.divider} />
+          <Pressable
+            style={[styles.logoutBtn, logoutHover && styles.logoutBtnHover]}
+            onHoverIn={() => setLogoutHover(true)}
+            onHoverOut={() => setLogoutHover(false)}
+          >
+            <Ionicons
+              name="log-out-outline"
+              size={20}
+              color={logoutHover ? '#FF4444' : 'rgba(255,255,255,0.7)'}
+              style={{ marginRight: 10 }}
+            />
+            <Text style={[styles.logoutText, logoutHover && styles.logoutTextHover]}>
+              Cerrar Sesión
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       {/* Main Content */}
@@ -115,76 +163,121 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F4F6F9',
   },
   sidebar: {
-    width: 250,
-    backgroundColor: '#040b16', // Dark blue color from screenshot
+    width: 260,
+    backgroundColor: NAVY,
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
   },
-  logoContainer: {
-    padding: 30,
+  logoSection: {
+    paddingTop: 24,
+    paddingBottom: 8,
     alignItems: 'center',
-    marginBottom: 10,
   },
-  logoText: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: 'bold',
-    letterSpacing: 4,
+  logoWrapper: {
+    width: 130,
+    height: 110,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoImage: {
+    width: 130,
+    height: 110,
   },
   adminSubtitle: {
-    color: '#FFFFFF',
-    marginTop: 20,
+    color: 'rgba(255,255,255,0.85)',
+    marginTop: 6,
     fontSize: 14,
+    letterSpacing: 1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    marginHorizontal: 20,
+    marginTop: 14,
+    marginBottom: 4,
+    width: '80%',
   },
   menuContainer: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 6,
   },
   menuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 11,
+    paddingHorizontal: 28,
+    marginHorizontal: 10,
+    borderRadius: 8,
+    marginVertical: 1,
   },
   menuItemActive: {
-    backgroundColor: '#cfa235', // Yellow from screenshot
+    backgroundColor: GOLD,
   },
   menuItemHover: {
-    backgroundColor: 'rgba(207, 162, 53, 0.2)', // Yellow hover
+    backgroundColor: GOLD_LIGHT,
   },
   menuText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 15,
   },
   menuTextActive: {
     color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  menuTextHover: {
+    color: '#FFFFFF',
+  },
+  logoutSection: {
+    paddingBottom: 20,
   },
   logoutBtn: {
-    padding: 30,
-    marginTop: 'auto',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    marginHorizontal: 10,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  logoutBtnHover: {
+    backgroundColor: 'rgba(255, 68, 68, 0.1)',
   },
   logoutText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 15,
   },
   logoutTextHover: {
-    color: '#FF4444', // Red hover for logout
+    color: '#FF4444',
   },
   content: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    overflow: 'auto',
+    backgroundColor: '#F4F6F9',
   },
   // Mobile styles
   mobileHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: '#E8E8E8',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  mobileHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: NAVY,
+    letterSpacing: 2,
   },
   mobileHeaderRight: {
     flexDirection: 'row',
@@ -193,11 +286,16 @@ const styles = StyleSheet.create({
   mobileNav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#040b16',
-    paddingVertical: 15,
+    backgroundColor: NAVY,
+    paddingVertical: 10,
+    paddingBottom: 14,
+  },
+  mobileNavItem: {
+    alignItems: 'center',
+    gap: 3,
   },
   mobileNavText: {
     color: '#FFFFFF',
-    fontSize: 14,
-  }
+    fontSize: 11,
+  },
 });
