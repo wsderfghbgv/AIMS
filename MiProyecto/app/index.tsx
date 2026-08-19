@@ -10,7 +10,6 @@ import {
   Platform,
   Image,
   ScrollView,
-  Alert,
   ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,8 +19,7 @@ import { validatePassword, validatePasswordMatch, isDisposableEmail } from '../u
 
 
 export default function AuthScreen() {
-  const { user, token, isLoading, login, register, logout } = useAuth();
-
+  const { user, isLoading, login, register, logout } = useAuth();
   // Screen state: 'login' (default) | 'register'
   const [currentScreen, setCurrentScreen] = useState<'login' | 'register'>('login');
 
@@ -85,8 +83,6 @@ export default function AuthScreen() {
       setFeedback({ text: res.message || '¡Cuenta creada y JWT almacenado exitosamente!', type: 'success' });
     }
   };
-
-
   return (
     <View style={styles.outerContainer}>
       {/* Dark Academia Deep Midnight Navy Gradient */}
@@ -502,6 +498,203 @@ export default function AuthScreen() {
                 )}
               </>
             )}
+{false && (
+  <>
+    <View style={styles.lightCard}>
+                <Text style={styles.cardTitleLight}>INICIO DE SESIÓN</Text>
+
+                {/* Correo / Matrícula */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.labelLight}>Correo Institucional / Matrícula</Text>
+                  <View style={styles.borderedInputWrapper}>
+                    <Ionicons name="mail" size={18} color="#475569" style={styles.fieldIcon} />
+                    <TextInput
+                      style={styles.borderedInput}
+                      placeholder="vtorres@formacionsena.edu.co"
+                      placeholderTextColor="#94A3B8"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      value={loginCorreo}
+                      onChangeText={setLoginCorreo}
+                    />
+                  </View>
+                </View>
+
+                {/* Contraseña */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.labelLight}>Contraseña</Text>
+                  <View style={styles.borderedInputWrapper}>
+                    <Ionicons name="lock-closed" size={18} color="#475569" style={styles.fieldIcon} />
+                    <TextInput
+                      style={styles.borderedInput}
+                      placeholder="••••••••••••"
+                      placeholderTextColor="#94A3B8"
+                      secureTextEntry={!showLoginPassword}
+                      value={loginPassword}
+                      onChangeText={setLoginPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowLoginPassword(!showLoginPassword)}>
+                      <Ionicons name={showLoginPassword ? "eye-off-outline" : "eye-outline"} size={18} color="#64748B" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Options Row: Checkbox & Forgot Password */}
+                <View style={styles.optionsRow}>
+                  <TouchableOpacity 
+                    style={styles.checkboxRow} 
+                    activeOpacity={0.7}
+                    onPress={() => setRememberMe(!rememberMe)}
+                  >
+                    <Ionicons 
+                      name={rememberMe ? "checkbox" : "square-outline"} 
+                      size={18} 
+                      color={rememberMe ? "#C59427" : "#64748B"} 
+                    />
+                    <Text style={styles.rememberText}>Recordar mis datos</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity activeOpacity={0.7}>
+                    <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Submit Login Button */}
+                <TouchableOpacity style={styles.goldButton} activeOpacity={0.85} onPress={handleLogin}>
+                  <Text style={styles.goldButtonText}>INICIAR SESIÓN →</Text>
+                </TouchableOpacity>
+
+                {/* Social Login Separator */}
+                <View style={styles.dividerRow}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>O inicia sesión con:</Text>
+                  <View style={styles.dividerLine} />
+                </View>
+
+                {/* Social Buttons (Outlook & Google) */}
+                <View style={styles.socialRow}>
+                  <TouchableOpacity style={styles.socialButton} activeOpacity={0.8}>
+                    <Ionicons name="mail" size={22} color="#0078D4" />
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity style={styles.socialButton} activeOpacity={0.8}>
+                    <Ionicons name="logo-google" size={22} color="#EA4335" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Switch to Register Button */}
+                <View style={styles.switchContainer}>
+                  <Text style={styles.switchTextLight}>¿No tienes una cuenta? </Text>
+                  <TouchableOpacity onPress={() => setCurrentScreen('register')}>
+                    <Text style={styles.goldLink}>Regístrate</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+            {/* ================= REGISTRO DE CUENTA ================= */}
+            {currentScreen === 'register' && (
+              <View style={styles.darkCard}>
+                <View style={styles.cardHeaderLogo}>
+                  <Image 
+                    source={require('../assets/images/logo.jpeg')} 
+                    style={styles.cardLogoImg} 
+                    resizeMode="contain" 
+                  />
+                  <View>
+                    <Text style={styles.cardLogoTitle}>ACADEMIC INTELLIGENT</Text>
+                    <Text style={styles.cardLogoSubtitle}>MANAGEMENT SYSTEM</Text>
+                  </View>
+                </View>
+
+                <Text style={styles.cardTitleDark}>REGISTRO</Text>
+
+                {/* Nombre Completo */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.labelDark}>Nombre Completo</Text>
+                  <View style={styles.whiteInputWrapper}>
+                    <Ionicons name="person" size={18} color="#475569" style={styles.fieldIcon} />
+                    <TextInput
+                      style={styles.whiteInput}
+                      placeholder="Valentina Torres"
+                      placeholderTextColor="#94A3B8"
+                      value={regNombre}
+                      onChangeText={setRegNombre}
+                    />
+                  </View>
+                </View>
+
+                {/* Correo Institucional */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.labelDark}>Correo Institucional</Text>
+                  <View style={styles.whiteInputWrapper}>
+                    <Ionicons name="mail" size={18} color="#475569" style={styles.fieldIcon} />
+                    <TextInput
+                      style={styles.whiteInput}
+                      placeholder="vtorres@formacionsena.edu.co"
+                      placeholderTextColor="#94A3B8"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      value={regCorreo}
+                      onChangeText={setRegCorreo}
+                    />
+                  </View>
+                </View>
+
+                {/* Contraseña */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.labelDark}>Contraseña</Text>
+                  <View style={styles.whiteInputWrapper}>
+                    <Ionicons name="lock-closed" size={18} color="#475569" style={styles.fieldIcon} />
+                    <TextInput
+                      style={styles.whiteInput}
+                      placeholder="••••••••••••"
+                      placeholderTextColor="#94A3B8"
+                      secureTextEntry={!showRegPassword}
+                      value={regPassword}
+                      onChangeText={setRegPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowRegPassword(!showRegPassword)}>
+                      <Ionicons name={showRegPassword ? "eye-off-outline" : "eye-outline"} size={18} color="#64748B" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Confirmar Contraseña */}
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.labelDark}>Confirmar Contraseña</Text>
+                  <View style={styles.whiteInputWrapper}>
+                    <Ionicons name="lock-closed" size={18} color="#475569" style={styles.fieldIcon} />
+                    <TextInput
+                      style={styles.whiteInput}
+                      placeholder="••••••••••••"
+                      placeholderTextColor="#94A3B8"
+                      secureTextEntry={!showRegConfirmPassword}
+                      value={regConfirmPassword}
+                      onChangeText={setRegConfirmPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowRegConfirmPassword(!showRegConfirmPassword)}>
+                      <Ionicons name={showRegConfirmPassword ? "eye-off-outline" : "eye-outline"} size={18} color="#64748B" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Submit Register Button */}
+                <TouchableOpacity style={styles.goldButton} activeOpacity={0.85} onPress={handleRegister}>
+                  <Text style={styles.goldButtonText}>CREAR CUENTA →</Text>
+                </TouchableOpacity>
+
+                {/* Switch back to Login */}
+                <View style={styles.switchContainer}>
+                  <Text style={styles.switchTextDark}>¿Ya tienes una cuenta? </Text>
+                  <TouchableOpacity onPress={() => setCurrentScreen('login')}>
+                    <Text style={styles.goldLink}>Inicia Sesión</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+
+  </>
+)}
           </ScrollView>
         </KeyboardAvoidingView>
 
@@ -891,7 +1084,6 @@ const styles = StyleSheet.create({
     color: '#64748B',
     fontSize: 11,
   },
-
   /* JWT & VALIDATION FEEDBACK STYLES */
   loadingContainer: {
     padding: 16,
@@ -1061,4 +1253,3 @@ const styles = StyleSheet.create({
     color: '#F87171',
   },
 });
-
