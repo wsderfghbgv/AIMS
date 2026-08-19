@@ -5,8 +5,8 @@ export interface User {
   id: string;
   nombre: string;
   correo: string;
+  role: 'ADMIN' | 'INSTRUCTOR' | 'APRENDIZ';
 }
-
 export interface AuthResponse {
   success: boolean;
   token?: string;
