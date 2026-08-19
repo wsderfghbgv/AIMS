@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '../context/AuthContext'; // ajusta la ruta según dónde quede el archivo
 
 export default function AuthScreen() {
   // Screen state: 'login' (default) | 'register'
@@ -23,6 +24,10 @@ export default function AuthScreen() {
   const [loginPassword, setLoginPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const { login } = useAuth();
+const [loginError, setLoginError] = useState('');
+const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   // Register Form State
   const [regNombre, setRegNombre] = useState('');
@@ -32,10 +37,16 @@ export default function AuthScreen() {
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
 
-  const handleLogin = () => {
-    console.log("Iniciar sesión:", { loginCorreo, loginPassword, rememberMe });
-  };
-
+  const handleLogin = async () => {
+  setLoginError('');
+  setIsSubmitting(true);
+  const result = await login(loginCorreo, loginPassword);
+  if (!result.success) {
+    setLoginError(result.message || 'Error al iniciar sesión');
+  }
+  // si fue exitoso, el redirect ya ocurrió dentro de login()
+  setIsSubmitting(false);
+};
   const handleRegister = () => {
     console.log("Registrar cuenta:", { regNombre, regCorreo, regPassword, regConfirmPassword });
   };
