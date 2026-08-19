@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 export default function RootLayout() {
   return (
     <>
-      <Stack>
+      <Stack screenOptions={{ headerShown: false }}>
         {/* Definimos nuestra pantalla principal (index.tsx) y le ocultamos la barra superior para que se vea el fondo oscuro completo */}
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>

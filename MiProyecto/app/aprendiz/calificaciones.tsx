@@ -19,19 +19,9 @@ export default function CalificacionesAprendiz() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {!isDesktop && (
-        <View style={styles.mobileTopBar}>
-          <Ionicons name="menu" size={32} color="#000" />
-          <View style={styles.topIcons}>
-            <Ionicons name="notifications-outline" size={26} color="#000" style={{ marginRight: 15 }} />
-            <Ionicons name="person" size={26} color="#000" />
-          </View>
-        </View>
-      )}
-
       <Text style={styles.pageTitle}>Mis calificaciones</Text>
 
-      <View style={styles.summaryContainer}>
+      <View style={[styles.summaryContainer, !isDesktop && styles.summaryContainerMobile]}>
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>PROMEDIO GENERAL</Text>
           <Text style={styles.summaryValue}>4.1</Text>
@@ -107,6 +97,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
     marginBottom: 24,
+  },
+  summaryContainerMobile: {
+    flexDirection: 'column',
   },
   summaryCard: {
     flex: 1,
